@@ -1,5 +1,5 @@
 /**
- * @license Copyright (c) 2003-2021, CKSource - Frederico Knabben. All rights reserved.
+ * @license Copyright (c) 2003-2022, CKSource Holding sp. z o.o. All rights reserved.
  * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
 
@@ -8,6 +8,7 @@
  */
 
 import { Plugin } from 'ckeditor5/src/core';
+import { Delete } from 'ckeditor5/src/typing';
 
 import blockAutoformatEditing from './blockautoformatediting';
 import inlineAutoformatEditing from './inlineautoformatediting';
@@ -21,6 +22,13 @@ import inlineAutoformatEditing from './inlineautoformatediting';
  * @extends module:core/plugin~Plugin
  */
 export default class Autoformat extends Plugin {
+	/**
+	 * @inheritdoc
+	 */
+	static get requires() {
+		return [ Delete ];
+	}
+
 	/**
 	 * @inheritDoc
 	 */

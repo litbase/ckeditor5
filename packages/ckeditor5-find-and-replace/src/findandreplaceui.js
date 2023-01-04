@@ -1,5 +1,5 @@
 /**
- * @license Copyright (c) 2003-2021, CKSource - Frederico Knabben. All rights reserved.
+ * @license Copyright (c) 2003-2022, CKSource Holding sp. z o.o. All rights reserved.
  * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
 
@@ -29,6 +29,9 @@ export default class FindAndReplaceUI extends Plugin {
 		return 'FindAndReplaceUI';
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	constructor( editor ) {
 		super( editor );
 
@@ -55,12 +58,12 @@ export default class FindAndReplaceUI extends Plugin {
 			dropdown.bind( 'isEnabled' ).to( editor.commands.get( 'find' ) );
 			dropdown.panelView.children.add( formView );
 
-			// Each time a dropdown is opened, the search text field should get focused and selected for better UX.
-			// Note: Using the low priority here to make sure the following listener starts working after the
-			// default action of the drop-down is executed (i.e. the panel showed up). Otherwise, the
-			// invisible form/input cannot be focused/selected.
+			// Every time a dropdown is opened, the search text field should get focused and selected for better UX.
+			// Note: Using the low priority here to make sure the following listener starts working after
+			// the default action of the drop-down is executed (i.e. the panel showed up). Otherwise,
+			// the invisible form/input cannot be focused/selected.
 			//
-			// Each time a dropdown is closed, move the focus back to the editing root (to preserve it)
+			// Each time a dropdown is closed, move the focus back to the find and replace toolbar button
 			// and let the find and replace editing feature know that all search results can be invalidated
 			// and no longer should be marked in the content.
 			dropdown.on( 'change:isOpen', ( event, name, isOpen ) => {
@@ -69,12 +72,9 @@ export default class FindAndReplaceUI extends Plugin {
 
 					formView.reset();
 					formView._findInputView.fieldView.select();
-					formView.focus();
 
 					formView.enableCssTransitions();
 				} else {
-					editor.editing.view.focus();
-
 					this.fire( 'searchReseted' );
 				}
 			}, { priority: 'low' } );
@@ -87,8 +87,10 @@ export default class FindAndReplaceUI extends Plugin {
 	}
 
 	/**
+	 * Sets up the find and replace button.
+	 *
 	 * @private
-	 * @param {module:ui/dropdown/dropdownview~DropdownView} buttonView
+	 * @param {module:ui/dropdown/dropdownview~DropdownView} dropdown
 	 */
 	_setupDropdownButton( dropdown ) {
 		const editor = this.editor;
@@ -102,12 +104,16 @@ export default class FindAndReplaceUI extends Plugin {
 		} );
 
 		editor.keystrokes.set( 'Ctrl+F', ( data, cancelEvent ) => {
-			dropdown.isOpen = true;
-			cancelEvent();
+			if ( dropdown.isEnabled ) {
+				dropdown.isOpen = true;
+				cancelEvent();
+			}
 		} );
 	}
 
 	/**
+	 * Sets up the form view for the find and replace.
+	 *
 	 * @private
 	 * @param {module:find-and-replace/ui/findandreplaceformview~FindAndReplaceFormView} formView A related form view.
 	 */
